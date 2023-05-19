@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+package stocksnprices_adapter;
+
+import "google/protobuf/timestamp.proto";
+
+// PusherService
+service PusherService {
+  // PushPrice - send prices information
+  rpc PushPrice(PricesRequest) returns (PricesReply) {}
+  // PushStock - send stocks information
+  rpc PushStock(StocksRequest) returns (StocksReply) {}
+}
+
+// SourceType - which client called the function
+enum Source {
+  SOURCE_UNSPECIFIED = 0;
+  SOURCE_PHARMA = 1;
+  SOURCE_MAGNIT_MARKET = 2;
+}
+
+// PriceType - some kind of internal separation of price types
+enum PriceType {
+  PRICE_UNSPECIFIED = 0;
+  PRICE_TYPE_OFFLINE = 1;
+  PRICE_TYPE_ONLINE = 2;
+}
+
+message PricesRequest {
+  string store_id = 1; // @gotags: validate:"required"
+  repeated Price prices = 2; // @gotags: validate:"required"
+  Source source = 3; // @gotags: validate:"required"
+}
+
+message Price {
+  string good_id = 1; // @gotags: validate:"required"
+  double base_price = 2; // @gotags: validate:"required"
+  optional double action_price = 3;
+  bool is_action = 4;
+  optional google.protobuf.Timestamp action_from = 5;
+  optional google.protobuf.Timestamp action_to = 6;
+  optional PriceType price_type = 7;
+}
+
+message PricesReply {
+  bool result = 1;
+  // ERR_INFO_REASON error codes for FailedPrecondition
+  enum ERR_INFO_REASON {
+    UNSPECIFIED = 0;
+    VALIDATION_ERROR = 1;
+  }
+}
+
+message StocksRequest {
+  string store_id = 1; // @gotags: validate:"required"
+  repeated Stock stocks = 2; // @gotags: validate:"required"
+  Source source = 3; // @gotags: validate:"required"
+}
+
+message Stock {
+  string good_id = 1; // @gotags: validate:"required"
+  double quantity = 2; // @gotags: validate:"required"
+}
+
+message StocksReply {
+  bool result = 1;
+  // ERR_INFO_REASON error codes for FailedPrecondition
+  enum ERR_INFO_REASON {
+    UNSPECIFIED = 0;
+    VALIDATION_ERROR = 1;
+  }
+}

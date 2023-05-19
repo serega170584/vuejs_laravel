@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+  nginx:
+    build: ./nginx
+    volumes:
+      - './project/example-app/public:/app/public'
+    ports:
+      - '3100:80'
+    depends_on:
+      - app
+  app:
+    build: ./app
+    volumes:
+      - './project/example-app:/app'
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  frontend:
+    build: ./frontend
+    volumes:
+      - './vuejs:/app'
+    ports:
+      - '3200:8080'
+volumes:
+  db-data:
+  rm-data:
