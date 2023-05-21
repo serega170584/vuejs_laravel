@@ -31,10 +31,28 @@
 </template>
 
 <script>
+import axios from "axios";
+import { useCookie } from 'vue-cookie-next';
+
 export default {
   name: 'HelloWorld',
   props: {
     msg: String
+  },
+  setup() {
+    const cookie = useCookie()
+    console.log(cookie.getCookie('XSRF-TOKEN'))
+
+    const instance = axios.create({
+      baseURL: 'http://localhost:3100',
+      headers: {
+        'X-XSRF-TOKEN': cookie.getCookie('XSRF-TOKEN')
+      }
+    });
+    instance.get('api/test')
+  },
+  mounted() {
+
   }
 }
 </script>
